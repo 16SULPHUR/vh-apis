@@ -3,6 +3,7 @@ const router = express.Router();
 const { load } = require("@cashfreepayments/cashfree-js");
 const { Cashfree } = require("cashfree-pg");
 const { SingleProduct } = require("../Models/Product");
+const Order = require("../Models/Order");
 require("dotenv").config();
 
 const decryptPhoneNumber = (encryptedPhoneNumber, shift) => {
@@ -70,6 +71,16 @@ router.post("/createOrder", async (req, res) => {
     });
 
   // res.json({ msg: "response.data" });
+}).post("/registerOrder", async (req, res)=>{
+  const body = req.body
+
+  const newOrder = new Order({orderDetails: body.details})
+
+  console.log(newOrder)
+
+  const savedOrder = await newOrder.save()
+
+  res.json({msg: savedOrder})
 });
 
 module.exports = router;
