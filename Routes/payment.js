@@ -5,6 +5,44 @@ const { Cashfree } = require("cashfree-pg");
 const { SingleProduct } = require("../Models/Product");
 const Order = require("../Models/Order");
 require("dotenv").config();
+const crypto = require('crypto');
+const zlib = require('zlib');
+
+
+// Encryption function
+function encryptData(data, key) {
+    // Convert JSON to string
+    const jsonString = JSON.stringify(data);
+
+    // Compress the JSON string
+    const compressedData = zlib.deflateSync(jsonString);
+
+    // Encrypt the compressed data
+    const cipher = crypto.createCipher('aes-256-cbc', key);
+    let encryptedData = cipher.update(compressedData, 'buffer', 'hex');
+    encryptedData += cipher.final('hex');
+
+    return encryptedData;
+}
+
+// Decryption function
+function decryptData(encryptedData, key) {
+    // Decrypt the data
+    const decipher = crypto.createDecipher('aes-256-cbc', key);
+    let decryptedData = decipher.update(encryptedData, 'hex', 'buffer');
+    decryptedData = Buffer.concat([decryptedData, decipher.final()]);
+
+    // Decompress the decrypted data
+    const decompressedData = zlib.inflateSync(decryptedData);
+
+    // Convert decompressed data to JSON
+    const json = JSON.parse(decompressedData.toString());
+
+    return json;
+}
+
+// Sample key (should be 32 characters for AES-256)
+const key = "0123456789abcdef0123456789abcdef";
 
 const decryptPhoneNumber = (encryptedPhoneNumber, shift) => {
   // Check if the input is a valid encrypted phone number
@@ -42,7 +80,29 @@ router
 
     console.log(productDetails);
 
-    const currentTime = new Date().getTime();
+    function getCustomTimestamp() {
+      const currentDate = new Date();
+      const hours = currentDate.getHours().toString().padStart(2, '0');
+      const minutes = currentDate.getMinutes().toString().padStart(2, '0');
+      const date = currentDate.getDate().toString().padStart(2, '0');
+      const month = (currentDate.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-based, so we add 1
+      const year = currentDate.getFullYear().toString().slice(-2); // Get last two digits of the year
+  
+      return `${hours}${minutes}${date}${month}${year}`;
+  }
+  
+  const currentTime = getCustomTimestamp();
+
+  const addressData = {
+    streetAddress: body.streetAddress,
+    aptSuite: body.aptSuite,
+    floor: body.floor,
+    building: body.building,
+    landmark: body.landmark,
+    city: body.city,
+    state: body.state,
+    zip: body.zip
+};
 
     var request = {
       order_amount: productDetails.discountedPrice,
@@ -52,11 +112,13 @@ router
         customer_id: body.phone,
         customer_phone: body.phone,
         customer_email: body.email,
+        customer_name: body.fullname
       },
       order_meta: {
         return_url: "https://varietyheaven.in",
       },
-      order_note: `{ address: {fullName: ${body.fullName},streetAddress: ${body.streetAddress}, aptSuite: ${body.aptSuite}, floor: ${body.floor}, building: ${body.building}, landmark: ${body.landmark}, city: ${body.city}, state: ${body.state}, zip: ${body.zip}, }, },`,
+      order_note: encryptData(addressData, key)
+      
     };
 
     console.log(request);
@@ -83,9 +145,13 @@ router
 
     const productDetails = await SingleProduct.findById({ _id: productId });
 
+    console.log(productDetails)
+
     const newOrder = new Order({
       orderDetails: body.details,
       productDetails: productDetails,
+      phone:body.details.customer_details.customer_phone,
+      address: decryptData(body.details.order_note, key)
     });
 
     console.log(newOrder);
