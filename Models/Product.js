@@ -4,6 +4,8 @@ const ImagesSchema = new mongoose.Schema({});
 
 const SingleProductSchema = new mongoose.Schema({
   title: String,
+  sku: String,
+  hsn: String,
   description: String,
   thumbnail: {
     type: String,
@@ -32,10 +34,27 @@ const SingleProductSchema = new mongoose.Schema({
   price: Number,
   discountedPrice: Number,
   catagory: String,
-  likes:{
-    type:Number,
-    default: 0
-  }
+  likes: {
+    type: Number,
+    default: 0,
+  },
+  hsn: {
+    type: Number,
+    default: 5407,
+  },
+  gstRate: {
+    type: Number,
+    enum: [5, 12, 18, 28],
+    default: 5,
+  },
+  video1: {
+    type: String,
+    default: "",
+  },
+  video2: {
+    type: String,
+    default: "",
+  },
 });
 
 const VarientSchema = new mongoose.Schema({

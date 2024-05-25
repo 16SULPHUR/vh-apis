@@ -15,7 +15,37 @@ require("dotenv").config();
 
 const fs = require("fs");
 
-const createReceipt = async () => {
+var ImageKit = require("imagekit");
+
+var imagekit = new ImageKit({
+  publicKey: "public_gkPbyKgZlAzLEh+N4QjuH1lJzYo=",
+  privateKey: "private_KLXMquDly6NZvTLUjtAA0mYFRss=",
+  urlEndpoint: "https://ik.imagekit.io/dqn1rnabh/",
+});
+
+const uploadImage = async (buffer, oId) => {
+  return new Promise((resolve, reject) => {
+    imagekit.upload(
+      {
+        file: buffer, // required
+        fileName: oId, // required
+      },
+      function (error, result) {
+        if (error) {
+          console.error(error);
+          reject(error);
+        } else {
+          // console.log(result);
+          resolve(result);
+        }
+      }
+    );
+  });
+};
+
+
+
+const createReceipt = async (invoiceDetails) => {
   console.log(process.env.PDF_SERVICES_CLIENT_ID);
   // Initial setup, create credentials instance
   const credentials = new ServicePrincipalCredentials({
@@ -34,46 +64,40 @@ const createReceipt = async () => {
   });
 
   // Setup input data for the document merge process
-  const inputData = {
-    author: "Gary Lee",
-    Company: {
-      Name: "Projected",
-      Address: "19718 Mandrake Way",
-      PhoneNumber: "+1-100000098",
-    },
-    Invoice: {
-      Date: "January 15, 2021",
-      Number: 123,
-      Items: [
-        {
-          item: "Gloves",
-          description: "Microwave gloves",
-          UnitPrice: 5,
-          Quantity: 2,
-          Total: 10,
-        },
-        {
-          item: "Bowls",
-          description: "Microwave bowls",
-          UnitPrice: 10,
-          Quantity: 2,
-          Total: 20,
-        },
-      ],
-    },
-    Customer: {
-      Name: "Collins Candy",
-      Address: "315 Dunning Way",
-      PhoneNumber: "+1-200000046",
-      Email: "cc@abcdef.co.dw",
-    },
-    Tax: 5,
-    Shipping: 5,
-    clause: {
-      overseas: "The shipment might take 5-10 more than informed.",
-    },
-    paymentMethod: "Cash",
-  };
+  // const inputData = {
+  //   author: "Gary Lee",
+  //   Company: {
+  //     Name: "Projected",
+  //     Address: "19718 Mandrake Way",
+  //     PhoneNumber: "+1-100000098",
+  //   },
+  //   Invoice: {
+  //     Date: "January 15, 2021",
+  //     Number: 123,
+  //     Items: [
+  //       {
+  //         item: "Gloves",
+  //         description: "Microwave gloves",
+  //         UnitPrice: 5,
+  //         Quantity: 2,
+  //         Total: 10,
+  //       },
+  //     ],
+  //   },
+  //   Customer: {
+  //     Name: "Collins Candy",
+  //     Address: "315 Dunning Way",
+  //     PhoneNumber: "+1-200000046",
+  //     Email: "cc@abcdef.co.dw",
+  //   },
+  //   Tax: 5,
+  //   Shipping: 5,
+  //   clause: {
+  //     overseas: "The shipment might take 5-10 more than informed.",
+  //   },
+  // };
+
+  const inputData = invoiceDetails
 
   const jsonDataForMerge = inputData;
 
@@ -97,10 +121,23 @@ const createReceipt = async () => {
   const resultAsset = pdfServicesResponse.result.asset;
   const streamAsset = await pdfServices.getContent({ asset: resultAsset });
 
-  console.log("resultAsset")
-  console.log(resultAsset._downloadURI)
+  const buffer = await new Promise((resolve, reject) => {
+    const chunks = [];
+    streamAsset.readStream.on('data', chunk => chunks.push(chunk));
+    streamAsset.readStream.on('end', () => resolve(Buffer.concat(chunks)));
+    streamAsset.readStream.on('error', reject);
+  });
 
-  return resultAsset._downloadURI
+  console.log("buffer")
+  console.log(buffer)
+
+const pdf = await uploadImage(buffer, invoiceDetails.cfOId)
+console.log(pdf.url)
+
+  // console.log("resultAsset")
+  // console.log(resultAsset._downloadURI)
+
+  return pdf.url
   // Creates a write stream and copy stream asset's content to it
   // const outputFilePath = "./generatePDFOutput.pdf";
   // console.log(`Saving asset at ${outputFilePath}`);

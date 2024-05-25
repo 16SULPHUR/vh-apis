@@ -17,6 +17,7 @@ const trackingLinks = {
   bluedart: "https://bluedart.com/tracking",
   dtdc: "https://www.dtdc.in/tracking.asp",
   tirupati: "http://www.shreetirupaticourier.net/",
+  indiaPost: "https://www.indiapost.gov.in/_layouts/15/dop.portal.tracking/trackconsignment.aspx",
 };
 
 

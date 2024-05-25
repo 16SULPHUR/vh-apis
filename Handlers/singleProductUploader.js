@@ -8,6 +8,8 @@ const singleProductUploader = async (req, res) => {
     try {
         const newSingleProduct = new SingleProduct({
             title: body.title,
+            sku: body.sku,
+            hsn:body.hsn,
             description: body.description,
             price: body.price,
             discountedPrice: body.discountedPrice,

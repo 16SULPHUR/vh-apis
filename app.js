@@ -46,6 +46,7 @@ const signupRouter = require("./Routes/signup");
 const paymentRouter = require("./Routes/payment");
 const ordersRouter = require("./Routes/orders");
 const createReceiptRouter = require("./Routes/createReceipt");
+const uploadVideoRouter = require("./Routes/uploadVideo");
 
 app.use("/addProduct", addProductRouter);
 app.use("/getAllProducts", getAllProductsRouter);
@@ -58,6 +59,7 @@ app.use("/signup", signupRouter);
 app.use("/payment", paymentRouter);
 app.use("/orders", ordersRouter);
 app.use("/receipt", createReceiptRouter);
+app.use("/uploadVideo", uploadVideoRouter);
 
 const url = "https://api.phone.email/v1/sendmail";
 const apiKey = "Kt2ZhlZ0blszcUyNWZpOGv0Cs99MPeVW";
