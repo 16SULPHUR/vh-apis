@@ -1,5 +1,5 @@
 const express = require('express');
-const { SingleProduct } = require('../Models/Product');
+const { SingleProduct, VariantProduct } = require('../Models/Product');
 const router = express.Router();
 
 const getProductHandler = async (req,res)=>{
@@ -7,7 +7,8 @@ const getProductHandler = async (req,res)=>{
 
     id = body.id
 
-    const product = await SingleProduct.find({_id: id})
+    // const product = await SingleProduct.find({_id: id})
+    const product = await VariantProduct.find({_id: id})
 
     res.json({
         product:product

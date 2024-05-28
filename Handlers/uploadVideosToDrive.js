@@ -2,7 +2,7 @@ const stream = require("stream");
 const express = require("express");
 const multer = require("multer");
 const { google } = require("googleapis");
-const { SingleProduct } = require("../Models/Product");
+const { SingleProduct, VariantProduct } = require("../Models/Product");
 
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID,
@@ -61,7 +61,7 @@ async function uploadVideosToDrive(req, res) {
     const file = req.file;
     console.log(body);
 
-    const product = await SingleProduct.findOne({ _id: body.id });
+    const product = await VariantProduct.findOne({ _id: body.id });
 
     console.log(product);
 
@@ -112,3 +112,4 @@ async function uploadVideosToDrive(req, res) {
 }
 
 module.exports = { uploadVideosToDrive };
+

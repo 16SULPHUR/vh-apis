@@ -7,7 +7,8 @@ const addThumbnailHandler = async (req, res)=>{
 
     console.log(req.file)
     
-    const product = await SingleProduct.findOne({_id: body.id})
+    // const product = await SingleProduct.findOne({_id: body.id})
+    const product = await VariantProduct.findOne({_id: body.id})
 
     const thumbnailURL = await uploadThumbnail(req.file)
 

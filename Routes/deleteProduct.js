@@ -1,5 +1,5 @@
 const express = require('express');
-const { SingleProduct } = require('../Models/Product');
+const { SingleProduct, VariantProduct } = require('../Models/Product');
 const router = express.Router();
 
 const deleteProductHandler = async (req,res)=>{
@@ -7,7 +7,8 @@ const deleteProductHandler = async (req,res)=>{
 
     id = body.id
 
-    await SingleProduct.deleteOne({_id: id})
+    // await SingleProduct.deleteOne({_id: id})
+    await VariantProduct.deleteOne({_id: id})
 
     const products = await SingleProduct.find()
 

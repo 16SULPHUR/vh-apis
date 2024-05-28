@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { load } = require("@cashfreepayments/cashfree-js");
 const { Cashfree } = require("cashfree-pg");
-const { SingleProduct } = require("../Models/Product");
+const { SingleProduct, VariantProduct } = require("../Models/Product");
 const Order = require("../Models/Order");
 require("dotenv").config();
 const crypto = require("crypto");
@@ -174,7 +174,7 @@ router
 
     console.log(body);
 
-    const productDetails = await SingleProduct.findById({ _id: body.pId });
+    const productDetails = await VariantProduct.findById({ _id: body.pId });
 
     console.log(productDetails);
 
@@ -193,11 +193,12 @@ router
 
     const addressData = {
       houseNumberAndStreetAddress: body.houseNumberAndStreetAddress,
-      area: body.area,
-      city: body.city,
-      state: body.state,
-      pin: body.pin,
-      customerGSTIN: body.customerGSTIN,
+      area: `${body.area}`,
+      city: `${body.city}`,
+      state: `${body.state}`,
+      pin: `${body.pin}`,
+      customerGSTIN: `${body.customerGSTIN}`,
+      selectedVarient: body.varient
     };
 
     var request = {
@@ -240,7 +241,7 @@ router
     const productId = parts[1]; // Index 1 contains "6641d127c234693c101fcc7a"
     console.log(productId);
 
-    const productDetails = await SingleProduct.findById({ _id: productId });
+    const productDetails = await VariantProduct.findById({ _id: productId });
     const catagories = await Catagories.findById({
       _id: "662e846c1fd35b13d42f4549",
     });
@@ -304,7 +305,7 @@ router
         Number: savedCatagories.invoiceNumber,
         Items: [
           {
-            Item: productDetails.sku.toUpperCase() || "",
+            Item: productDetails.variations[body.details.order_tags.selectedVarient].sku.toUpperCase(),
             Hsn: productDetails.hsn,
             UnitPrice: body.details.order_amount,
             Quantity: 1,
