@@ -20,7 +20,6 @@ const addCatagoryHandler = async (req, res) => {
     console.log(catagories);
     res.send({ catagories: catagories.catagory });
   }
-  res.json({err: "can not be blank"})
 };
 
 module.exports = addCatagoryHandler;
