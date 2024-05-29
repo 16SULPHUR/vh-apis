@@ -305,6 +305,7 @@ router
         Number: savedCatagories.invoiceNumber,
         Items: [
           {
+            ItemTitle:productDetails.title,
             Item: productDetails.variations[body.details.order_tags.selectedVarient].sku.toUpperCase(),
             Hsn: productDetails.hsn,
             UnitPrice: body.details.order_amount,
