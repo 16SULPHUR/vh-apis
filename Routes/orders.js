@@ -135,7 +135,7 @@ router
             orderToChange.isPaymentStatusChecked = true
 
             if(json.order_status == "PAID"){
-              orderToChange.orderStatus = "PAYMENT RECEIVED"
+              orderToChange.orderStatus = "payment received"
             }
 
             await orderToChange.save()
