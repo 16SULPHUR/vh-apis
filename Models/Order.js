@@ -23,6 +23,10 @@ const OrderSchema = new mongoose.Schema({
   productDetails: Object,
   phone: String,
   address: Object,
+  isPaymentStatusChecked:{
+    type: Boolean,
+    default: false
+  },
   invoice: {
     type: String,
     default: "",
@@ -48,8 +52,8 @@ const OrderSchema = new mongoose.Schema({
   },
   orderStatus: {
     type: String,
-    enum: ["payment received", "shipped to courier provider"],
-    default: "payment received",
+    enum: ["payment pending","payment received", "shipped to courier provider"],
+    default: "payment pending",
   },
   customer_gstin:{
     type: String,

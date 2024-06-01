@@ -218,11 +218,28 @@ router
       // order_note: encryptData(addressData, key),
     };
 
-    console.log(request);
+    console.log(request); 
+
+    
 
     Cashfree.PGCreateOrder("2023-08-01", request)
-      .then((response) => {
+      .then(async (response) => {
         console.log("Order created successfully:", response.data);
+
+        const newOrder = new Order({
+          orderDetails: response.data,
+          productDetails: productDetails,
+          phone: response.data.customer_details.customer_phone,
+          address: formatAddress(response.data.order_tags),
+          invoice: "",
+        });
+
+        console.log("newOrder")
+        console.log(newOrder)
+
+        await newOrder.save()
+
+
         res.json({ msg: response.data });
       })
       .catch((error) => {
