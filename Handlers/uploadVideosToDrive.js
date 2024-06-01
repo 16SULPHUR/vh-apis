@@ -76,7 +76,7 @@ async function uploadVideosToDrive(req, res) {
         mimeType: "video/mp4",
       },
       media: {
-        mimeType: "image/png",
+        mimeType: "video/mp4",
         body: bufferStream,
       },
     });
